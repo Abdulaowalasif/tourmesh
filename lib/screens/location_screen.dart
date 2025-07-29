@@ -19,153 +19,167 @@ class _LocationScreenState extends State<LocationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final int sharedDeviceCount = connectedDevices.length;
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF9FAFB), // Match HomeScreen background
       appBar: AppBar(
         title: const Text('Location Sharing'),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black87, // black text color
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Column(
           children: [
+            // Location sharing toggle card
             Card(
+              color: Colors.white,
+              elevation: 2,
+              shadowColor: Colors.black.withOpacity(0.1),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              margin: const EdgeInsets.only(bottom: 16),
               child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                child: Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Share Live Location',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              SizedBox(height: 4),
-                              Text(
-                                'Let others see your real-time location',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Switch(
-                          value: _locationSharing,
-                          onChanged: (value) {
-                            setState(() {
-                              _locationSharing = value;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    if (_locationSharing) ...[
-                      const SizedBox(height: 12),
-                      const Row(
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(Icons.check_circle, color: Colors.green, size: 16),
-                          SizedBox(width: 8),
-                          Text(
-                            'Sharing location with 3 devices',
-                            style: TextStyle(color: Colors.green, fontSize: 14),
+                          const Text(
+                            'Share Live Location',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                              color: Colors.black87,
+                            ),
                           ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Let others see your real-time location',
+                            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          ),
+                          if (_locationSharing)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Sharing with $sharedDeviceCount device${sharedDeviceCount > 1 ? 's' : ''}',
+                                    style: const TextStyle(color: Colors.green, fontSize: 14),
+                                  ),
+                                ],
+                              ),
+                            ),
                         ],
+                      ),
+                    ),
+                    Switch(
+                      activeColor: Colors.green,
+                      value: _locationSharing,
+                      onChanged: (value) {
+                        setState(() {
+                          _locationSharing = value;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Map view card
+            Card(
+              color: Colors.white,
+              elevation: 2,
+              shadowColor: Colors.black.withOpacity(0.1),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              margin: const EdgeInsets.only(bottom: 16),
+              child: Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF9FAFB),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.map, size: 48, color: Colors.grey),
+                      SizedBox(height: 8),
+                      Text(
+                        'Map View',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Interactive map would appear here',
+                        style: TextStyle(fontSize: 12, color: Colors.grey),
                       ),
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+
+            // Location details card
             Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
+              color: Colors.white,
+              elevation: 2,
+              shadowColor: Colors.black.withOpacity(0.1),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              margin: const EdgeInsets.only(bottom: 16),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Column(
                   children: [
-                    Container(
-                      height: 200,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.grey[200],
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.map, size: 48, color: Colors.grey),
-                          SizedBox(height: 8),
-                          Text('Map View'),
-                          Text(
-                            'Interactive map would appear here',
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Latitude:', style: TextStyle(color: Colors.grey)),
-                            Text('40.7128° N', style: TextStyle(fontFamily: 'monospace')),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Longitude:', style: TextStyle(color: Colors.grey)),
-                            Text('74.0060° W', style: TextStyle(fontFamily: 'monospace')),
-                          ],
-                        ),
-                        SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('Accuracy:', style: TextStyle(color: Colors.grey)),
-                            Text('±5 meters'),
-                          ],
-                        ),
-                      ],
-                    ),
+                    _LocationDetailRow(label: 'Latitude:', value: '40.7128° N'),
+                    SizedBox(height: 8),
+                    _LocationDetailRow(label: 'Longitude:', value: '74.0060° W'),
+                    SizedBox(height: 8),
+                    _LocationDetailRow(label: 'Accuracy:', value: '±5 meters'),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 24),
+
+            // Group Locations header
             Align(
               alignment: Alignment.centerLeft,
               child: Text(
                 'Group Locations',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
             ),
             const SizedBox(height: 12),
+
+            // Device list expanded
             Expanded(
               child: ListView.builder(
                 itemCount: connectedDevices.length,
                 itemBuilder: (context, index) {
                   final device = connectedDevices[index];
                   return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
+                    color: Colors.white,
+                    elevation: 1,
+                    shadowColor: Colors.black.withOpacity(0.05),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
-                      leading: const Icon(Icons.location_on, color: Colors.red),
-                      title: Text(device.name),
-                      subtitle: const Text('0.2 km away'),
+                      leading: const Icon(Icons.location_on, color: Colors.red, size: 28),
+                      title: Text(device.name, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87)),
+                      subtitle: const Text('0.2 km away', style: TextStyle(color: Colors.grey)),
                       trailing: OutlinedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          // TODO: Show map/detail for this device
+                        },
                         child: const Text('View'),
                       ),
                     ),
@@ -176,6 +190,28 @@ class _LocationScreenState extends State<LocationScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _LocationDetailRow extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _LocationDetailRow({
+    super.key,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label, style: TextStyle(color: Colors.grey[600])),
+        Text(value, style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w500, color: Colors.black87)),
+      ],
     );
   }
 }

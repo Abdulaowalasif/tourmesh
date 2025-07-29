@@ -19,178 +19,186 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('TourMesh'),
-            Text(
-              '${connectedDevices.length} devices connected',
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('TourMesh',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                Text('${connectedDevices.length} connected',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 13)),
+              ],
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings, color: Colors.black87),
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              ),
             ),
           ],
         ),
-        backgroundColor: Colors.white,
-        elevation: 1,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
-              );
-            },
-          ),
-        ],
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: ListView(
           children: [
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              crossAxisSpacing: 16,
-              mainAxisSpacing: 16,
-              children: [
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.message,
-                  title: '1-to-1 Chat',
-                  subtitle: 'Direct messaging',
-                  color: Colors.blue,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const ChatScreen()),
-                  ),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.group,
-                  title: 'Group Chat',
-                  subtitle: 'Broadcast messages',
-                  color: Colors.green,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const GroupChatScreen()),
-                  ),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.phone,
-                  title: 'Calls',
-                  subtitle: 'Voice communication',
-                  color: Colors.purple,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CallScreen()),
-                  ),
-                ),
-                _buildFeatureCard(
-                  context,
-                  icon: Icons.folder,
-                  title: 'File Share',
-                  subtitle: 'Transfer files',
-                  color: Colors.orange,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const FileTransferScreen()),
-                  ),
-                ),
-              ],
-            ),
             const SizedBox(height: 16),
-            Card(
-              child: ListTile(
-                leading: const Icon(Icons.location_on, color: Colors.red),
-                title: const Text('Location Sharing'),
-                subtitle: const Text('Share your location with the group'),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LocationScreen()),
-                ),
-              ),
-            ),
+            _buildFeatureGrid(context),
             const SizedBox(height: 24),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Text(
-                'Connected Devices',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+            _buildLocationCard(context),
+            const SizedBox(height: 32),
+            Text(
+              'Connected Devices',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
             ),
             const SizedBox(height: 12),
-            Expanded(
-              child: ListView.builder(
-                itemCount: connectedDevices.length,
-                itemBuilder: (context, index) {
-                  final device = connectedDevices[index];
-                  return Card(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: ListTile(
-                      leading: Container(
-                        width: 8,
-                        height: 8,
-                        decoration: const BoxDecoration(
-                          color: Colors.green,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      title: Text(device.name),
-                      trailing: Text('${device.signalStrength}%'),
-                    ),
-                  );
-                },
-              ),
-            ),
+            ...connectedDevices.map((device) => DeviceTile(device: device)),
+            const SizedBox(height: 24),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFeatureCard(
-      BuildContext context, {
-        required IconData icon,
-        required String title,
-        required String subtitle,
-        required Color color,
-        required VoidCallback onTap,
-      }) {
+  Widget _buildFeatureGrid(BuildContext context) {
+    return GridView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 1,
+      ),
+      children: [
+        FeatureCard(
+          icon: Icons.chat_bubble,
+          title: '1-to-1 Chat',
+          color: Colors.blue,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ChatScreen())),
+        ),
+        FeatureCard(
+          icon: Icons.groups,
+          title: 'Group Chat',
+          color: Colors.green,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GroupChatScreen())),
+        ),
+        FeatureCard(
+          icon: Icons.phone,
+          title: 'Voice Calls',
+          color: Colors.purple,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const CallScreen())),
+        ),
+        FeatureCard(
+          icon: Icons.folder_shared,
+          title: 'File Share',
+          color: Colors.orange,
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const FileTransferScreen())),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLocationCard(BuildContext context) {
     return Card(
+      color: Colors.red[50],
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ListTile(
+        leading: const Icon(Icons.location_on, color: Colors.red, size: 28),
+        title: const Text('Location Sharing',
+            style: TextStyle(fontWeight: FontWeight.w600)),
+        subtitle: const Text('Share your location with the group'),
+        trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16),
+        onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LocationScreen())),
+      ),
+    );
+  }
+}
+
+class FeatureCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final Color color;
+  final VoidCallback onTap;
+
+  const FeatureCard({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      elevation: 3,
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(18),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 32, color: color),
-              const SizedBox(height: 12),
+              CircleAvatar(
+                radius: 28,
+                backgroundColor: color.withOpacity(0.15),
+                child: Icon(icon, size: 30, color: color),
+              ),
+              const SizedBox(height: 16),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                ),
                 textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
-                textAlign: TextAlign.center,
+                style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class DeviceTile extends StatelessWidget {
+  final Device device;
+
+  const DeviceTile({super.key, required this.device});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: ListTile(
+        leading: const Icon(Icons.device_hub, color: Colors.teal),
+        title: Text(device.name, style: const TextStyle(fontWeight: FontWeight.w500)),
+        subtitle: Row(
+          children: [
+            const Icon(Icons.signal_cellular_alt, size: 14, color: Colors.grey),
+            const SizedBox(width: 4),
+            Text('${device.signalStrength}%', style: const TextStyle(color: Colors.grey)),
+          ],
+        ),
+        trailing: device.connected
+            ? const Icon(Icons.check_circle, color: Colors.green, size: 20)
+            : null,
       ),
     );
   }

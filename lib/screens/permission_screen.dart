@@ -6,14 +6,16 @@ class PermissionsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: const Color(0xFFF9FAFB),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: Column(
             children: [
-              const SizedBox(height: 80),
+              const SizedBox(height: 60),
               Container(
                 width: 80,
                 height: 80,
@@ -27,12 +29,13 @@ class PermissionsScreen extends StatelessWidget {
                   color: Colors.blue,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
               const Text(
                 'Permissions Required',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
               ),
               const SizedBox(height: 8),
@@ -45,6 +48,8 @@ class PermissionsScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 40),
+
+              // Permission cards with HomeScreen style
               _buildPermissionCard(
                 icon: Icons.bluetooth,
                 title: 'Bluetooth',
@@ -63,9 +68,11 @@ class PermissionsScreen extends StatelessWidget {
                 icon: Icons.storage,
                 title: 'Storage',
                 description: 'Save and share files',
-                color: Colors.purple,
+                color: Colors.orange,
               ),
+
               const Spacer(),
+
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -81,8 +88,9 @@ class PermissionsScreen extends StatelessWidget {
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(20),
                     ),
+                    elevation: 4,
                   ),
                   child: const Text(
                     'Grant Permissions',
@@ -104,12 +112,19 @@ class PermissionsScreen extends StatelessWidget {
     required Color color,
   }) {
     return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 20),
         child: Row(
           children: [
-            Icon(icon, color: color, size: 24),
-            const SizedBox(width: 16),
+            CircleAvatar(
+              radius: 22,
+              backgroundColor: color.withOpacity(0.15),
+              child: Icon(icon, color: color, size: 28),
+            ),
+            const SizedBox(width: 20),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,10 +132,12 @@ class PermissionsScreen extends StatelessWidget {
                   Text(
                     title,
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 18,
                       fontWeight: FontWeight.w600,
+                      color: Colors.black87,
                     ),
                   ),
+                  const SizedBox(height: 4),
                   Text(
                     description,
                     style: const TextStyle(

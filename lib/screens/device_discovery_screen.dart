@@ -27,7 +27,7 @@ class _DeviceDiscoveryScreenState extends State<DeviceDiscoveryScreen>
     _scanAnimationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    )..repeat();
+    )..repeat(); // repeats forever
   }
 
   @override
@@ -39,77 +39,42 @@ class _DeviceDiscoveryScreenState extends State<DeviceDiscoveryScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Nearby Devices'),
-            Text(
-              'Scanning for TourMesh devices...',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ],
-        ),
-        backgroundColor: Colors.white,
-        elevation: 1,
+      backgroundColor: Colors.grey[100],
+      appBar: CustomAppBar(
+        title: 'Nearby Devices',
+        subtitle: 'Scanning for TourMesh devices...',
+        avatarText: 'D',
+        onCallPressed: () {
+          // You could add an action here or leave empty
+        },
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
             const SizedBox(height: 24),
             Center(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  AnimatedBuilder(
-                    animation: _scanAnimationController,
-                    builder: (context, child) {
-                      return Container(
-                        width: 80,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.blue.withOpacity(0.3),
-                            width: 4,
-                          ),
-                          borderRadius: BorderRadius.circular(40),
-                        ),
-                      );
-                    },
-                  ),
-                  RotationTransition(
-                    turns: _scanAnimationController,
-                    child: Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.blue,
-                          width: 4,
-                        ),
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      child: Container(
-                        margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(32),
-                          border: Border.all(
-                            color: Colors.transparent,
-                            width: 2,
-                          ),
-                        ),
-                      ),
+              child: SizedBox(
+                width: 80,
+                height: 80,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Infinite circular progress indicator border
+                    CircularProgressIndicator(
+                      strokeWidth: 4,
+                      color: Colors.blue,
+                      backgroundColor: Colors.blue.withOpacity(0.3),
+                      value: null, // null for infinite progress
                     ),
-                  ),
-                  const Icon(
-                    Icons.bluetooth,
-                    size: 32,
-                    color: Colors.blue,
-                  ),
-                ],
+                    // Fixed bluetooth icon in center
+                    const Icon(
+                      Icons.bluetooth,
+                      size: 32,
+                      color: Colors.blue,
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 40),
@@ -118,57 +83,102 @@ class _DeviceDiscoveryScreenState extends State<DeviceDiscoveryScreen>
                 itemCount: devices.length,
                 itemBuilder: (context, index) {
                   final device = devices[index];
-                  return Card(
+                  return Container(
                     margin: const EdgeInsets.only(bottom: 12),
-                    child: ListTile(
-                      leading: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(20),
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 5,
+                          offset: const Offset(1, 2),
                         ),
-                        child: const Icon(
-                          Icons.bluetooth,
-                          color: Colors.grey,
+                      ],
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Icon(
+                            Icons.bluetooth,
+                            color: Colors.grey,
+                          ),
                         ),
-                      ),
-                      title: Text(device.name),
-                      subtitle: Row(
-                        children: [
-                          const Icon(Icons.signal_cellular_alt, size: 16, color: Colors.grey),
-                          const SizedBox(width: 4),
-                          Text('${device.signalStrength}%'),
-                          if (device.connected) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(12),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                device.name,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87,
+                                ),
                               ),
-                              child: const Text(
-                                'Connected',
-                                style: TextStyle(fontSize: 12),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.signal_cellular_alt,
+                                      size: 16, color: Colors.grey),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    '${device.signalStrength}%',
+                                    style: const TextStyle(color: Colors.grey),
+                                  ),
+                                  if (device.connected) ...[
+                                    const SizedBox(width: 8),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Text(
+                                        'Connected',
+                                        style: TextStyle(
+                                            fontSize: 12, color: Colors.black54),
+                                      ),
+                                    ),
+                                  ],
+                                ],
                               ),
-                            ),
-                          ],
-                        ],
-                      ),
-                      trailing: ElevatedButton(
-                        onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
-                            ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: device.connected ? Colors.grey : Colors.blue,
-                          foregroundColor: Colors.white,
+                            ],
+                          ),
                         ),
-                        child: Text(device.connected ? 'Connected' : 'Connect'),
-                      ),
+                        ElevatedButton(
+                          onPressed: device.connected
+                              ? null
+                              : () {
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                  builder: (_) => const HomeScreen()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                            device.connected ? Colors.grey[400] : Colors.blue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 10),
+                          ),
+                          child:
+                          Text(device.connected ? 'Connected' : 'Connect'),
+                        ),
+                      ],
                     ),
                   );
                 },
@@ -179,4 +189,56 @@ class _DeviceDiscoveryScreenState extends State<DeviceDiscoveryScreen>
       ),
     );
   }
+}
+
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final String? subtitle;
+  final String avatarText;
+  final VoidCallback onCallPressed;
+  final List<Widget>? actions;
+
+  const CustomAppBar({
+    super.key,
+    required this.title,
+    this.subtitle,
+    required this.avatarText,
+    required this.onCallPressed,
+    this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 1,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+          ),
+          if (subtitle != null)
+            Text(
+              subtitle!,
+              style: const TextStyle(fontSize: 14, color: Colors.green),
+            ),
+        ],
+      ),
+      actions: [
+        if (actions != null) ...actions!,
+        IconButton(
+          icon: const Icon(Icons.refresh, color: Colors.blue),
+          onPressed: () {
+            // Optionally add scan refresh functionality
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

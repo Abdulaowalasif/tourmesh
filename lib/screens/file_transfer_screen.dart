@@ -41,13 +41,35 @@ class FileTransferScreen extends StatelessWidget {
       ),
     ];
 
+    Color getStatusColor(String status) {
+      switch (status) {
+        case 'completed':
+          return Colors.green;
+        case 'failed':
+          return Colors.red;
+        case 'pending':
+          return Colors.orange;
+        default:
+          return Colors.grey;
+      }
+    }
+
+    IconData getTypeIcon(String type) {
+      return type == 'received' ? Icons.download_rounded : Icons.upload_rounded;
+    }
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('File Transfer'),
+      backgroundColor: Colors.grey[100],
+      appBar: CustomAppBar(
+        title: 'File Transfers',
+        avatarText: 'F',
+        onCallPressed: () {}, // No call button here; leave empty or remove
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {},
+            icon: const Icon(Icons.add, color: Colors.blue),
+            onPressed: () {
+              // Implement add file action
+            },
           ),
         ],
       ),
@@ -56,102 +78,154 @@ class FileTransferScreen extends StatelessWidget {
         itemCount: files.length,
         itemBuilder: (context, index) {
           final file = files[index];
-          return Card(
+          return Container(
             margin: const EdgeInsets.only(bottom: 12),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.folder, color: Colors.grey),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          file.name,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                          ),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 5,
+                  offset: const Offset(1, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: Colors.blue[50],
+                  child: Icon(getTypeIcon(file.type), color: Colors.blue),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        file.name,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
                         ),
-                        const SizedBox(height: 4),
-                        Row(
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${file.size} • ${file.type.toUpperCase()}',
+                        style: const TextStyle(fontSize: 13, color: Colors.grey),
+                      ),
+                      const SizedBox(height: 8),
+                      if (file.status == 'pending')
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              file.size,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
+                            LinearProgressIndicator(
+                              value: file.progress / 100,
+                              backgroundColor: Colors.grey[300],
+                              valueColor:
+                              const AlwaysStoppedAnimation(Colors.blue),
                             ),
-                            const Text(' • ', style: TextStyle(color: Colors.grey)),
+                            const SizedBox(height: 4),
                             Text(
-                              file.type.toUpperCase(),
+                              '${file.progress}% complete',
                               style: const TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            Icon(
-                              file.type == 'received' ? Icons.download : Icons.upload,
-                              size: 16,
-                              color: Colors.grey,
+                                  fontSize: 12, color: Colors.grey),
                             ),
                           ],
+                        )
+                      else
+                        Text(
+                          file.status.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                            color: getStatusColor(file.status),
+                          ),
                         ),
-                        if (file.status == 'pending') ...[
-                          const SizedBox(height: 8),
-                          LinearProgressIndicator(
-                            value: file.progress / 100,
-                            backgroundColor: Colors.grey[300],
-                            valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            '${file.progress}% complete',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                if (file.status == 'completed')
+                  const Icon(Icons.check_circle, color: Colors.green)
+                else if (file.status == 'failed')
+                  const Icon(Icons.error_outline, color: Colors.red)
+                else if (file.status == 'pending' && file.type == 'received')
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 20),
+                          onPressed: () {
+                            // Cancel action
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.check, size: 20),
+                          onPressed: () {
+                            // Accept action
+                          },
+                        ),
                       ],
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  if (file.status == 'completed')
-                    const Icon(Icons.check_circle, color: Colors.green)
-                  else if (file.status == 'failed')
-                    const Icon(Icons.error, color: Colors.red)
-                  else if (file.status == 'pending' && file.type == 'received')
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.close, size: 20),
-                            onPressed: () {},
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.check, size: 20),
-                            onPressed: () {},
-                          ),
-                        ],
-                      ),
-                ],
-              ),
+              ],
             ),
           );
         },
       ),
     );
   }
+}
+
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final String? subtitle;
+  final String avatarText;
+  final VoidCallback onCallPressed;
+  final List<Widget>? actions;
+
+  const CustomAppBar({
+    super.key,
+    required this.title,
+    this.subtitle,
+    required this.avatarText,
+    required this.onCallPressed,
+    this.actions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      elevation: 1,
+      title: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
+          ),
+          if (subtitle != null)
+            Text(
+              subtitle!,
+              style: const TextStyle(fontSize: 14, color: Colors.green),
+            ),
+        ],
+      ),
+      actions: [
+        if (actions != null) ...actions!,
+        IconButton(
+          icon: const Icon(Icons.refresh, color: Colors.blue),
+          onPressed: () {
+            // Optional refresh logic
+          },
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
