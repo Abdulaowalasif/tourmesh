@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/device.dart';
+import 'chat_screen.dart';
 import 'home_screen.dart';
 
 class DeviceDiscoveryScreen extends StatefulWidget {
@@ -189,56 +190,4 @@ class _DeviceDiscoveryScreenState extends State<DeviceDiscoveryScreen>
       ),
     );
   }
-}
-
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final String? subtitle;
-  final String avatarText;
-  final VoidCallback onCallPressed;
-  final List<Widget>? actions;
-
-  const CustomAppBar({
-    super.key,
-    required this.title,
-    this.subtitle,
-    required this.avatarText,
-    required this.onCallPressed,
-    this.actions,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 1,
-      title: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.w600, color: Colors.black),
-          ),
-          if (subtitle != null)
-            Text(
-              subtitle!,
-              style: const TextStyle(fontSize: 14, color: Colors.green),
-            ),
-        ],
-      ),
-      actions: [
-        if (actions != null) ...actions!,
-        IconButton(
-          icon: const Icon(Icons.refresh, color: Colors.blue),
-          onPressed: () {
-            // Optionally add scan refresh functionality
-          },
-        ),
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

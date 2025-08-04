@@ -1,6 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+
+import 'chat_screen.dart';
 
 class CallScreen extends StatefulWidget {
   const CallScreen({super.key});
@@ -46,6 +47,25 @@ class _CallScreenState extends State<CallScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isPortrait = size.height > size.width;
+    final w = size.width;
+    final h = size.height;
+
+    double avatarRadius = w * 0.18;
+    double mainFont = w * 0.065;
+    double timerFont = w * 0.045;
+    double buttonIcon = w * 0.08;
+    double buttonSpace = w * 0.12;
+    double actionLabelFont = w * 0.038;
+
+    avatarRadius = avatarRadius.clamp(50.0, 120.0);
+    mainFont = mainFont.clamp(20.0, 36.0);
+    timerFont = timerFont.clamp(14.0, 28.0);
+    buttonIcon = buttonIcon.clamp(26.0, 46.0);
+    buttonSpace = buttonSpace.clamp(30.0, 70.0);
+    actionLabelFont = actionLabelFont.clamp(11.0, 18.0);
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: CustomAppBar(
@@ -55,69 +75,81 @@ class _CallScreenState extends State<CallScreen> {
         onCallPressed: _endCall,
         actions: [
           IconButton(
-            icon: Icon(_isMuted ? Icons.mic_off : Icons.mic, color: Colors.blue),
+            icon:
+                Icon(_isMuted ? Icons.mic_off : Icons.mic, color: Colors.blue),
             onPressed: () {
               setState(() => _isMuted = !_isMuted);
             },
+            iconSize: buttonIcon,
+            tooltip: _isMuted ? 'Unmute' : 'Mute',
           ),
         ],
       ),
       body: SafeArea(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              CircleAvatar(
-                radius: 70,
-                backgroundColor: Colors.blue[100],
-                child: Text(
-                  'J',
-                  style: const TextStyle(
-                    fontSize: 64,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Text(
-                "John's Phone",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[900],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                _formatDuration(_callDuration),
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.grey[700],
-                ),
-              ),
-              const SizedBox(height: 48),
-              Row(
+          child: SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: h * 0.7),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildActionButton(
-                    icon: _isMuted ? Icons.mic_off : Icons.mic,
-                    label: _isMuted ? 'Unmute' : 'Mute',
-                    color: _isMuted ? Colors.red : Colors.blue,
-                    background: Colors.blue.withOpacity(0.1),
-                    onTap: () => setState(() => _isMuted = !_isMuted),
+                  CircleAvatar(
+                    radius: avatarRadius,
+                    backgroundColor: Colors.blue[100],
+                    child: Text(
+                      'J',
+                      style: TextStyle(
+                        fontSize: avatarRadius * 0.9,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue,
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 40),
-                  _buildActionButton(
-                    icon: Icons.call_end,
-                    label: 'End',
-                    color: Colors.white,
-                    background: Colors.red,
-                    onTap: _endCall,
+                  SizedBox(height: h * 0.03),
+                  Text(
+                    "John's Phone",
+                    style: TextStyle(
+                      fontSize: mainFont,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[900],
+                    ),
+                  ),
+                  SizedBox(height: h * 0.01),
+                  Text(
+                    _formatDuration(_callDuration),
+                    style: TextStyle(
+                      fontSize: timerFont,
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  SizedBox(height: h * 0.07),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _buildActionButton(
+                        icon: _isMuted ? Icons.mic_off : Icons.mic,
+                        label: _isMuted ? 'Unmute' : 'Mute',
+                        color: _isMuted ? Colors.red : Colors.blue,
+                        background: Colors.blue.withOpacity(0.1),
+                        onTap: () => setState(() => _isMuted = !_isMuted),
+                        iconSize: buttonIcon,
+                        fontSize: actionLabelFont,
+                      ),
+                      SizedBox(width: buttonSpace),
+                      _buildActionButton(
+                        icon: Icons.call_end,
+                        label: 'End',
+                        color: Colors.white,
+                        background: Colors.red,
+                        onTap: _endCall,
+                        iconSize: buttonIcon,
+                        fontSize: actionLabelFont,
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
@@ -130,6 +162,8 @@ class _CallScreenState extends State<CallScreen> {
     required Color color,
     required Color background,
     required VoidCallback onTap,
+    required double iconSize,
+    required double fontSize,
   }) {
     return Column(
       children: [
@@ -138,7 +172,7 @@ class _CallScreenState extends State<CallScreen> {
           shape: const CircleBorder(),
           child: IconButton(
             icon: Icon(icon),
-            iconSize: 30,
+            iconSize: iconSize,
             color: color,
             onPressed: onTap,
           ),
@@ -148,68 +182,11 @@ class _CallScreenState extends State<CallScreen> {
           label,
           style: TextStyle(
             color: Colors.grey[700],
-            fontSize: 14,
+            fontSize: fontSize,
             fontWeight: FontWeight.w600,
           ),
         ),
       ],
     );
   }
-}
-
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final String? subtitle;
-  final String avatarText;
-  final VoidCallback onCallPressed;
-  final List<Widget>? actions;
-
-  const CustomAppBar({
-    super.key,
-    required this.title,
-    this.subtitle,
-    required this.avatarText,
-    required this.onCallPressed,
-    this.actions,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 1,
-      title: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: Colors.blue[100],
-            child: Text(avatarText, style: const TextStyle(color: Colors.blue)),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(title,
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black)),
-              if (subtitle != null)
-                Text(subtitle!,
-                    style: const TextStyle(fontSize: 12, color: Colors.green)),
-            ],
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.call_end, color: Colors.red),
-          onPressed: onCallPressed,
-        ),
-        if (actions != null) ...actions!,
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
