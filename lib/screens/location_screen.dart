@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/device.dart';
+import '../widgets/location_details_row.dart';
 
 class LocationScreen extends StatefulWidget {
   const LocationScreen({super.key});
@@ -38,10 +39,12 @@ class _LocationScreenState extends State<LocationScreen> {
               color: Colors.white,
               elevation: 2,
               shadowColor: Colors.black.withOpacity(0.1),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               margin: const EdgeInsets.only(bottom: 16),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 child: Row(
                   children: [
                     Expanded(
@@ -59,18 +62,21 @@ class _LocationScreenState extends State<LocationScreen> {
                           const SizedBox(height: 4),
                           Text(
                             'Let others see your real-time location',
-                            style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                            style: TextStyle(
+                                color: Colors.grey[600], fontSize: 14),
                           ),
                           if (_locationSharing)
                             Padding(
                               padding: const EdgeInsets.only(top: 12),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.check_circle, color: Colors.green, size: 18),
+                                  const Icon(Icons.check_circle,
+                                      color: Colors.green, size: 18),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Sharing with $sharedDeviceCount device${sharedDeviceCount > 1 ? 's' : ''}',
-                                    style: const TextStyle(color: Colors.green, fontSize: 14),
+                                    style: const TextStyle(
+                                        color: Colors.green, fontSize: 14),
                                   ),
                                 ],
                               ),
@@ -97,7 +103,8 @@ class _LocationScreenState extends State<LocationScreen> {
               color: Colors.white,
               elevation: 2,
               shadowColor: Colors.black.withOpacity(0.1),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               margin: const EdgeInsets.only(bottom: 16),
               child: Container(
                 height: 200,
@@ -113,7 +120,10 @@ class _LocationScreenState extends State<LocationScreen> {
                       SizedBox(height: 8),
                       Text(
                         'Map View',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.black87),
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87),
                       ),
                       SizedBox(height: 4),
                       Text(
@@ -131,17 +141,18 @@ class _LocationScreenState extends State<LocationScreen> {
               color: Colors.white,
               elevation: 2,
               shadowColor: Colors.black.withOpacity(0.1),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               margin: const EdgeInsets.only(bottom: 16),
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 child: Column(
                   children: [
-                    _LocationDetailRow(label: 'Latitude:', value: '40.7128° N'),
+                    LocationDetailRow(label: 'Latitude:', value: '40.7128° N'),
                     SizedBox(height: 8),
-                    _LocationDetailRow(label: 'Longitude:', value: '74.0060° W'),
+                    LocationDetailRow(label: 'Longitude:', value: '74.0060° W'),
                     SizedBox(height: 8),
-                    _LocationDetailRow(label: 'Accuracy:', value: '±5 meters'),
+                    LocationDetailRow(label: 'Accuracy:', value: '±5 meters'),
                   ],
                 ),
               ),
@@ -153,9 +164,9 @@ class _LocationScreenState extends State<LocationScreen> {
               child: Text(
                 'Group Locations',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
               ),
             ),
             const SizedBox(height: 12),
@@ -170,12 +181,18 @@ class _LocationScreenState extends State<LocationScreen> {
                     color: Colors.white,
                     elevation: 1,
                     shadowColor: Colors.black.withOpacity(0.05),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
-                      leading: const Icon(Icons.location_on, color: Colors.red, size: 28),
-                      title: Text(device.name, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87)),
-                      subtitle: const Text('0.2 km away', style: TextStyle(color: Colors.grey)),
+                      leading: const Icon(Icons.location_on,
+                          color: Colors.red, size: 28),
+                      title: Text(device.name,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87)),
+                      subtitle: const Text('0.2 km away',
+                          style: TextStyle(color: Colors.grey)),
                       trailing: OutlinedButton(
                         onPressed: () {
                           // TODO: Show map/detail for this device
@@ -190,28 +207,6 @@ class _LocationScreenState extends State<LocationScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _LocationDetailRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _LocationDetailRow({
-    super.key,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(label, style: TextStyle(color: Colors.grey[600])),
-        Text(value, style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.w500, color: Colors.black87)),
-      ],
     );
   }
 }

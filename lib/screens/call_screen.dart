@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 
+import '../widgets/build_action_button.dart';
+import '../widgets/custom_appbar.dart';
 import 'chat_screen.dart';
 
 class CallScreen extends StatefulWidget {
@@ -126,7 +128,7 @@ class _CallScreenState extends State<CallScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      _buildActionButton(
+                      buildActionButton(
                         icon: _isMuted ? Icons.mic_off : Icons.mic,
                         label: _isMuted ? 'Unmute' : 'Mute',
                         color: _isMuted ? Colors.red : Colors.blue,
@@ -136,7 +138,7 @@ class _CallScreenState extends State<CallScreen> {
                         fontSize: actionLabelFont,
                       ),
                       SizedBox(width: buttonSpace),
-                      _buildActionButton(
+                      buildActionButton(
                         icon: Icons.call_end,
                         label: 'End',
                         color: Colors.white,
@@ -156,37 +158,4 @@ class _CallScreenState extends State<CallScreen> {
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required Color background,
-    required VoidCallback onTap,
-    required double iconSize,
-    required double fontSize,
-  }) {
-    return Column(
-      children: [
-        Material(
-          color: background,
-          shape: const CircleBorder(),
-          child: IconButton(
-            icon: Icon(icon),
-            iconSize: iconSize,
-            color: color,
-            onPressed: onTap,
-          ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[700],
-            fontSize: fontSize,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
 }

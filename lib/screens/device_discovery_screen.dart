@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/device.dart';
+import '../widgets/custom_appbar.dart';
 import 'chat_screen.dart';
 import 'home_screen.dart';
 

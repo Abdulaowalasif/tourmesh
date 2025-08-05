@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/file_transfer.dart';
+import '../widgets/custom_appbar.dart';
 import 'chat_screen.dart';
 
 class FileTransferScreen extends StatelessWidget {

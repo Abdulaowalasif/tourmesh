@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../models/message.dart';
+import '../widgets/chat_input_bar.dart';
+import '../widgets/custom_appbar.dart';
+import '../widgets/message_bubble.dart';
 import 'call_screen.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -74,7 +77,8 @@ class _ChatScreenState extends State<ChatScreen> {
         subtitle: 'Online',
         avatarText: 'J',
         onCallPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const CallScreen()));
+          Navigator.push(
+              context, MaterialPageRoute(builder: (_) => const CallScreen()));
         },
       ),
       body: Column(
@@ -106,227 +110,6 @@ class _ChatScreenState extends State<ChatScreen> {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final String? subtitle;
-  final String avatarText;
-  final VoidCallback onCallPressed;
-  final List<Widget>? actions;
-
-  const CustomAppBar({
-    super.key,
-    required this.title,
-    this.subtitle,
-    required this.avatarText,
-    required this.onCallPressed,
-    this.actions,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 1,
-      title: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: Colors.blue[100],
-            child: Text(avatarText, style: const TextStyle(color: Colors.blue)),
-          ),
-          const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                ),
-              ),
-              if (subtitle != null)
-                Text(
-                  subtitle!,
-                  style: const TextStyle(fontSize: 12, color: Colors.green),
-                ),
-            ],
-          ),
-        ],
-      ),
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.phone, color: Colors.blue),
-          onPressed: onCallPressed,
-        ),
-        if (actions != null) ...actions!,
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
-
-class ChatInputBar extends StatelessWidget {
-  final TextEditingController controller;
-  final VoidCallback onSend;
-  final VoidCallback? onAttachPressed;
-  final VoidCallback? onCameraPressed;
-  final String hintText;
-
-  const ChatInputBar({
-    super.key,
-    required this.controller,
-    required this.onSend,
-    this.onAttachPressed,
-    this.onCameraPressed,
-    this.hintText = 'Type a message...',
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      color: Colors.white,
-      child: Row(
-        children: [
-          if (onAttachPressed != null)
-            IconButton(
-              icon: const Icon(Icons.attach_file, color: Colors.blue),
-              onPressed: onAttachPressed,
-            ),
-          if (onCameraPressed != null)
-            IconButton(
-              icon: const Icon(Icons.camera_alt, color: Colors.blue),
-              onPressed: onCameraPressed,
-            ),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(24),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: hintText,
-                  border: InputBorder.none,
-                ),
-                onSubmitted: (_) => onSend(),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          CircleAvatar(
-            backgroundColor: Colors.blue,
-            child: IconButton(
-              icon: const Icon(Icons.send, color: Colors.white),
-              onPressed: onSend,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class MessageBubble extends StatelessWidget {
-  final Message message;
-  final bool isMe;
-  final bool showSenderName;
-
-  const MessageBubble({
-    super.key,
-    required this.message,
-    required this.isMe,
-    this.showSenderName = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 4),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.7,
-        ),
-        child: Column(
-          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-          children: [
-            if (showSenderName && !isMe)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  message.sender,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                color: isMe ? Colors.blueAccent : Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(18),
-                  topRight: const Radius.circular(18),
-                  bottomLeft: Radius.circular(isMe ? 18 : 0),
-                  bottomRight: Radius.circular(isMe ? 0 : 18),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 3,
-                    offset: const Offset(1, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      color: isMe ? Colors.white : Colors.black87,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        message.timestamp,
-                        style: TextStyle(
-                          color: isMe ? Colors.white70 : Colors.grey,
-                          fontSize: 11,
-                        ),
-                      ),
-                      if (isMe) ...[
-                        const SizedBox(width: 4),
-                        Icon(
-                          message.delivered ? Icons.check : Icons.access_time,
-                          size: 14,
-                          color: Colors.white70,
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
